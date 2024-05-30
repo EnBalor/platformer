@@ -10,14 +10,17 @@ public interface Damagable
 }
 public class PlayerState : MonoBehaviour, Damagable
 {
+    public float staminaRate;
+
     public UIState uiState;
 
     State health { get { return uiState.health; } }
+    State stamina { get { return uiState.stamina; } }
 
     public State buff;
 
     public event Action onTakedamage;
-    public event Action onTakeBuff;
+    public event Action onLoseStamina;
 
     private void Awake()
     {
@@ -43,10 +46,18 @@ public class PlayerState : MonoBehaviour, Damagable
         onTakedamage?.Invoke();
     }
 
+    public void LoseStamina()
+    {
+        if(CharacterManager.Instance.Player.controller.isDash == true)
+        {
+            stamina.Substract(staminaRate);
+            onLoseStamina?.Invoke();
+        }
+    }
+
     public void TakeBuff(float speed, float duration)
     {
         StartCoroutine(SpeedBuffCoroutine(speed, duration));
-
     }
 
     private IEnumerator SpeedBuffCoroutine(float speed, float duration)

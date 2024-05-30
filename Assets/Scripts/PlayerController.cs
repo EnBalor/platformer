@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
+    public float dashSpeed;
     public float jumpPower;
     public float jumpPadImpulseForce;
     private Vector2 curMovementInput;
@@ -22,11 +23,14 @@ public class PlayerController : MonoBehaviour
     private Vector2 mouseDelta;
 
     private Rigidbody rigidbody;
+    private PlayerState playerState;
+    public bool isDash;
 
 
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
+        playerState = GetComponent<PlayerState>();
     }
 
     private void Start()
@@ -47,10 +51,33 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         Vector3 dir = transform.forward * curMovementInput.y + transform.right * curMovementInput.x;
-        dir *= moveSpeed;
+
+        if (isDash == false)
+        {
+            dir *= moveSpeed;
+        }
+        else
+        {
+            dir = dir * moveSpeed * dashSpeed;
+            playerState.LoseStamina();
+        }
+
         dir.y = rigidbody.velocity.y;
 
         rigidbody.velocity = dir;
+    }
+
+    public void OnDash(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+        {
+            isDash = true;
+        }
+
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            isDash = false;
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)

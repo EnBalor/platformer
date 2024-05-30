@@ -5,7 +5,7 @@ using UnityEngine;
 public class UIState : MonoBehaviour
 {
     public State health;
-    public State buff;
+    public State stamina;
 
     private void Start()
     {
